@@ -318,7 +318,7 @@
         
         // Check if logged in
         if (!adminKey) {
-            window.location.href = 'index.html';
+            window.location.href = '/admin';
         }
         
         // Show/hide sections
@@ -339,7 +339,7 @@
         // Logout
         function logout() {
             sessionStorage.removeItem('adminKey');
-            window.location.href = 'index.html';
+            window.location.href = '/admin';
         }
         
         // Show message

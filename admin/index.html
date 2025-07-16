@@ -136,7 +136,7 @@
                 // Store admin key in session storage
                 sessionStorage.setItem('adminKey', adminKey);
                 // Redirect to admin dashboard
-                window.location.href = 'dashboard.html';
+                window.location.href = '/admin/dashboard';
             } else {
                 errorMessage.style.display = 'block';
                 document.getElementById('admin-key').value = '';
@@ -150,7 +150,7 @@
         
         // Check if already logged in
         if (sessionStorage.getItem('adminKey')) {
-            window.location.href = 'dashboard.html';
+            window.location.href = '/admin/dashboard';
         }
     </script>
 </body>

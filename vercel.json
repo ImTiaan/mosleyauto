@@ -20,6 +20,14 @@
       "dest": "/api/$1"
     },
     {
+      "src": "/admin",
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "/admin/dashboard",
+      "dest": "/admin/dashboard.html"
+    },
+    {
       "src": "/admin/(.*)",
       "dest": "/admin/$1"
     },

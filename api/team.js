@@ -66,6 +66,13 @@ function readTeam() {
 
 // Write team data
 function writeTeam(data) {
+    // Check if we're in Vercel production environment (read-only filesystem)
+    if (process.env.READ_ONLY_FILESYSTEM === 'true') {
+        console.log('Running in read-only filesystem mode. Data changes will not be persisted.');
+        // In production, we'll simulate success without actually writing to the filesystem
+        return true;
+    }
+    
     try {
         writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
         return true;
@@ -125,6 +132,17 @@ module.exports = function handler(req, res) {
                     photo: member.photo || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face'
                 };
                 
+                // In production with read-only filesystem, we'll simulate adding the team member
+                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
+                    console.log('Simulating team member addition in read-only mode:', newMember);
+                    return res.status(Status.CREATED).json({
+                        success: true,
+                        message: 'Team member added successfully (demo mode - changes not persisted)',
+                        member: newMember
+                    });
+                }
+                
+                // In development or with writable filesystem, actually save the data
                 currentData.team.push(newMember);
                 
                 if (writeTeam(currentData)) {
@@ -168,7 +186,20 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
-                const deletedMember = deleteData.team.splice(memberIndex, 1)[0];
+                const deletedMember = deleteData.team[memberIndex];
+                
+                // In production with read-only filesystem, we'll simulate deleting the team member
+                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
+                    console.log('Simulating team member deletion in read-only mode:', deletedMember);
+                    return res.status(Status.OK).json({
+                        success: true,
+                        message: 'Team member deleted successfully (demo mode - changes not persisted)',
+                        member: deletedMember
+                    });
+                }
+                
+                // In development or with writable filesystem, actually save the data
+                deleteData.team.splice(memberIndex, 1);
                 
                 if (writeTeam(deleteData)) {
                     return res.status(Status.OK).json({

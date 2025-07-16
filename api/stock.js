@@ -74,6 +74,13 @@ function readVehicles() {
 
 // Write vehicles data
 function writeVehicles(data) {
+    // Check if we're in Vercel production environment (read-only filesystem)
+    if (process.env.READ_ONLY_FILESYSTEM === 'true') {
+        console.log('Running in read-only filesystem mode. Data changes will not be persisted.');
+        // In production, we'll simulate success without actually writing to the filesystem
+        return true;
+    }
+    
     try {
         writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
         return true;
@@ -138,6 +145,17 @@ module.exports = function handler(req, res) {
                     image: vehicle.image || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop&crop=center'
                 };
                 
+                // In production with read-only filesystem, we'll simulate adding the vehicle
+                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
+                    console.log('Simulating vehicle addition in read-only mode:', newVehicle);
+                    return res.status(Status.CREATED).json({
+                        success: true,
+                        message: 'Vehicle added successfully (demo mode - changes not persisted)',
+                        vehicle: newVehicle
+                    });
+                }
+                
+                // In development or with writable filesystem, actually save the data
                 currentData.vehicles.push(newVehicle);
                 
                 if (writeVehicles(currentData)) {
@@ -181,7 +199,20 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
-                const deletedVehicle = deleteData.vehicles.splice(vehicleIndex, 1)[0];
+                const deletedVehicle = deleteData.vehicles[vehicleIndex];
+                
+                // In production with read-only filesystem, we'll simulate deleting the vehicle
+                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
+                    console.log('Simulating vehicle deletion in read-only mode:', deletedVehicle);
+                    return res.status(Status.OK).json({
+                        success: true,
+                        message: 'Vehicle deleted successfully (demo mode - changes not persisted)',
+                        vehicle: deletedVehicle
+                    });
+                }
+                
+                // In development or with writable filesystem, actually save the data
+                deleteData.vehicles.splice(vehicleIndex, 1);
                 
                 if (writeVehicles(deleteData)) {
                     return res.status(Status.OK).json({

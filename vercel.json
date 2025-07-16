@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "api/**/*.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "runtime": "nodejs18.x"
+      }
     },
     {
       "src": "**/*.html",
@@ -12,12 +15,20 @@
     {
       "src": "assets/**/*",
       "use": "@vercel/static"
+    },
+    {
+      "src": "data/**/*",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/stock",
+      "dest": "/api/stock.js"
+    },
+    {
+      "src": "/api/team",
+      "dest": "/api/team.js"
     },
     {
       "src": "/admin",

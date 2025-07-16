@@ -1,7 +1,10 @@
 // Vercel Serverless Function for Team Management
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
-import Status from 'http-status-codes';
+const fs = require('fs');
+const path = require('path');
+const Status = require('http-status-codes');
+
+const { readFileSync, writeFileSync, existsSync } = fs;
+const { join } = path;
 
 const DATA_FILE = join(process.cwd(), 'data', 'team.json');
 
@@ -72,7 +75,7 @@ function writeTeam(data) {
     }
 }
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

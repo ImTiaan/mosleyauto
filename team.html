@@ -68,7 +68,9 @@
         // Load team from API
         async function loadTeam() {
             try {
-                const response = await fetch('/api/team');
+                // Add timestamp to prevent caching
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/team?t=${timestamp}`);
                 const data = await response.json();
                 
                 const loadingEl = document.getElementById('loading');

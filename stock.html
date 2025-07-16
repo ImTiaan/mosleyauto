@@ -62,7 +62,9 @@
         // Load stock from API
         async function loadStock() {
             try {
-                const response = await fetch('/api/stock');
+                // Add timestamp to prevent caching
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/stock?t=${timestamp}`);
                 const data = await response.json();
                 
                 const loadingEl = document.getElementById('loading');

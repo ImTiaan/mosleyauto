@@ -1,0 +1,40 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "make": "Ford",
+      "model": "Mustang",
+      "year": 2018,
+      "price": 25999,
+      "mileage": 45000,
+      "color": "Red",
+      "transmission": "Manual",
+      "description": "AMAZING RED MUSTANG! This baby PURRS like a kitten and ROARS like a lion! Perfect for cruising the streets in STYLE! Low miles, high thrills!",
+      "image": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop"
+    },
+    {
+      "id": 2,
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2020,
+      "price": 22500,
+      "mileage": 28000,
+      "color": "Blue",
+      "transmission": "Automatic",
+      "description": "RELIABLE FAMILY SEDAN! This Camry is PERFECT for the family that wants COMFORT and RELIABILITY! Great gas mileage and smooth ride!",
+      "image": "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&h=600&fit=crop"
+    },
+    {
+      "id": 3,
+      "make": "Chevrolet",
+      "model": "Silverado",
+      "year": 2019,
+      "price": 35000,
+      "mileage": 52000,
+      "color": "Black",
+      "transmission": "Automatic",
+      "description": "TOUGH TRUCK FOR TOUGH JOBS! This Silverado can haul ANYTHING you throw at it! Perfect for work or weekend adventures!",
+      "image": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&h=600&fit=crop"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "team": [
+    {
+      "id": 1,
+      "name": "Big Mike Mosley",
+      "role": "Owner & Head Salesman",
+      "bio": "Mike's been selling cars for 25 YEARS! He knows EVERY trick in the book to get you the BEST DEAL! Don't let his friendly smile fool you - he's SERIOUS about cars!",
+      "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
+    },
+    {
+      "id": 2,
+      "name": "Speedy Sally",
+      "role": "Finance Manager",
+      "bio": "Sally can get you APPROVED faster than you can say 'VROOM VROOM'! She's got connections with ALL the banks and will fight for YOUR best interest rate!",
+      "photo": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face"
+    },
+    {
+      "id": 3,
+      "name": "Wrench Willie",
+      "role": "Chief Mechanic",
+      "bio": "Willie's been fixing cars since he was knee-high to a grasshopper! Every car on our lot gets the WILLIE TREATMENT - guaranteed to run like NEW!",
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face"
+    }
+  ]
+}

@@ -8,7 +8,7 @@ const { readFileSync, writeFileSync, existsSync } = fs;
 const { join } = path;
 
 const DATA_FILE = join(process.cwd(), 'data', 'vehicles.json');
-const BLOB_KEY = 'vehicles.json';
+const BLOB_KEY = 'mosleyauto/vehicles.json';
 
 // Initialize data file if it doesn't exist
 function initializeDataFile() {
@@ -69,35 +69,70 @@ async function readVehicles() {
         console.log('VERCEL env:', process.env.VERCEL);
         console.log('BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
         
-        // Try to read from Vercel Blob first if BLOB_READ_WRITE_TOKEN is set
+        // Read from local file first
+        console.log('Reading from local file:', DATA_FILE);
+        initializeDataFile();
+        const fileData = readFileSync(DATA_FILE, 'utf8');
+        const parsedData = JSON.parse(fileData);
+        console.log('Data from local file:', JSON.stringify(parsedData).substring(0, 100) + '...');
+        
+        // Try to read from Vercel Blob if BLOB_READ_WRITE_TOKEN is set
         if (process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN) {
             console.log('Attempting to read from Vercel Blob...');
             try {
                 const blob = await get(BLOB_KEY);
                 console.log('Blob found:', !!blob);
+                
                 if (blob) {
                     console.log('Blob URL:', blob.url);
                     const response = await fetch(blob.url);
-                    const data = await response.json();
-                    console.log('Data from Blob:', JSON.stringify(data).substring(0, 100) + '...');
-                    return data;
+                    const blobData = await response.json();
+                    console.log('Data from Blob:', JSON.stringify(blobData).substring(0, 100) + '...');
+                    
+                    // Compare local data with blob data
+                    const localVehicleIds = parsedData.vehicles.map(v => v.id);
+                    const blobVehicleIds = blobData.vehicles.map(v => v.id);
+                    
+                    // If blob has more vehicles, use blob data
+                    if (blobVehicleIds.length > localVehicleIds.length) {
+                        console.log('Blob has more vehicles, using blob data');
+                        return blobData;
+                    }
+                    
+                    // If local has more vehicles, update the blob
+                    if (localVehicleIds.length > blobVehicleIds.length) {
+                        console.log('Local has more vehicles, updating blob');
+                        try {
+                            const jsonData = JSON.stringify(parsedData, null, 2);
+                            await put(BLOB_KEY, jsonData, {
+                                contentType: 'application/json',
+                                access: 'public',
+                            });
+                            console.log('Blob updated with local data');
+                        } catch (updateError) {
+                            console.error('Error updating blob:', updateError);
+                        }
+                    }
                 } else {
-                    console.log('Blob not found, falling back to local file');
+                    console.log('Blob not found, creating it with local data');
+                    try {
+                        const jsonData = JSON.stringify(parsedData, null, 2);
+                        const newBlob = await put(BLOB_KEY, jsonData, {
+                            contentType: 'application/json',
+                            access: 'public',
+                        });
+                        console.log('Created new blob:', newBlob.url);
+                    } catch (createError) {
+                        console.error('Error creating blob:', createError);
+                    }
                 }
             } catch (blobError) {
                 console.log('Error reading from Blob:', blobError);
-                // If blob doesn't exist yet, continue to read from local file
             }
         } else {
-            console.log('Not using Vercel Blob, falling back to local file');
+            console.log('Not using Vercel Blob');
         }
         
-        // Fallback to local file (for development or initial data)
-        console.log('Reading from local file:', DATA_FILE);
-        initializeDataFile();
-        const data = readFileSync(DATA_FILE, 'utf8');
-        const parsedData = JSON.parse(data);
-        console.log('Data from local file:', JSON.stringify(parsedData).substring(0, 100) + '...');
         return parsedData;
     } catch (error) {
         console.error('Error reading vehicles:', error);
@@ -113,7 +148,12 @@ async function writeVehicles(data) {
         console.log('VERCEL env:', process.env.VERCEL);
         console.log('BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
         
-        // In Vercel production with BLOB_READ_WRITE_TOKEN, write to Blob storage
+        // Always write to local file first
+        console.log('Writing to local file:', DATA_FILE);
+        writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+        console.log('Data successfully written to local file');
+        
+        // Then try to write to Blob if in Vercel with BLOB_READ_WRITE_TOKEN
         if (process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN) {
             console.log('Attempting to write to Vercel Blob...');
             try {
@@ -136,25 +176,13 @@ async function writeVehicles(data) {
                 } catch (verifyError) {
                     console.log('Error verifying data:', verifyError);
                 }
-                
-                return true;
             } catch (blobError) {
                 console.error('Error writing to Vercel Blob:', blobError);
-                // If Blob write fails, simulate success for demo purposes
-                console.log('Simulating successful write for demo purposes');
-                return true;
+                console.log('Continuing with local file only');
             }
-        } else if (process.env.VERCEL) {
-            // In Vercel without BLOB_READ_WRITE_TOKEN, simulate success
-            console.log('BLOB_READ_WRITE_TOKEN not set. Simulating successful write for demo purposes');
-            return true;
-        } else {
-            // In development, write to local file
-            console.log('Writing to local file:', DATA_FILE);
-            writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-            console.log('Data successfully written to local file');
-            return true;
         }
+        
+        return true;
     } catch (error) {
         console.error('Error writing vehicles:', error);
         // For demo purposes, return true even if there's an error
@@ -189,15 +217,58 @@ module.exports = async function handler(req, res) {
             let blobExists = false;
             let blobUrl = '';
             let blobData = null;
+            let allBlobs = [];
+            let listError = null;
             
             try {
                 if (process.env.BLOB_READ_WRITE_TOKEN) {
+                    // Try to list all blobs
+                    try {
+                        const blobs = await list();
+                        allBlobs = blobs.blobs;
+                        console.log('All blobs:', allBlobs);
+                    } catch (listErr) {
+                        console.error('Error listing blobs:', listErr);
+                        listError = listErr.toString();
+                    }
+                    
+                    // Try to get the specific blob
                     const blob = await get(BLOB_KEY);
                     if (blob) {
                         blobExists = true;
                         blobUrl = blob.url;
                         const response = await fetch(blob.url);
                         blobData = await response.json();
+                    }
+                    
+                    // If blob doesn't exist, try to create it
+                    if (!blobExists) {
+                        console.log('Blob does not exist, attempting to create it...');
+                        try {
+                            // Read local file
+                            const fileContent = readFileSync(DATA_FILE, 'utf8');
+                            const localData = JSON.parse(fileContent);
+                            
+                            // Write to blob
+                            const jsonData = JSON.stringify(localData, null, 2);
+                            const newBlob = await put(BLOB_KEY, jsonData, {
+                                contentType: 'application/json',
+                                access: 'public',
+                            });
+                            
+                            console.log('Created new blob:', newBlob.url);
+                            
+                            // Try to get the blob again
+                            const verifyBlob = await get(BLOB_KEY);
+                            if (verifyBlob) {
+                                blobExists = true;
+                                blobUrl = verifyBlob.url;
+                                const verifyResponse = await fetch(verifyBlob.url);
+                                blobData = await verifyResponse.json();
+                            }
+                        } catch (createError) {
+                            console.error('Error creating blob:', createError);
+                        }
                     }
                 }
             } catch (error) {
@@ -227,7 +298,10 @@ module.exports = async function handler(req, res) {
                     blob: {
                         exists: blobExists,
                         url: blobUrl,
-                        data: blobData
+                        data: blobData,
+                        allBlobs: allBlobs,
+                        listError: listError,
+                        blobKey: BLOB_KEY
                     },
                     local: {
                         exists: !!localData,

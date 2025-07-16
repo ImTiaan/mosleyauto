@@ -8,7 +8,7 @@ const { readFileSync, writeFileSync, existsSync } = fs;
 const { join } = path;
 
 const DATA_FILE = join(process.cwd(), 'data', 'team.json');
-const BLOB_KEY = 'team.json';
+const BLOB_KEY = 'mosleyauto/team.json';
 
 // Initialize data file if it doesn't exist
 function initializeDataFile() {
@@ -57,25 +57,75 @@ function initializeDataFile() {
 // Read team data
 async function readTeam() {
     try {
-        // Try to read from Vercel Blob first if BLOB_READ_WRITE_TOKEN is set
+        console.log('Reading team data...');
+        console.log('VERCEL env:', process.env.VERCEL);
+        console.log('BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
+        
+        // Read from local file first
+        console.log('Reading from local file:', DATA_FILE);
+        initializeDataFile();
+        const fileData = readFileSync(DATA_FILE, 'utf8');
+        const parsedData = JSON.parse(fileData);
+        console.log('Data from local file:', JSON.stringify(parsedData).substring(0, 100) + '...');
+        
+        // Try to read from Vercel Blob if BLOB_READ_WRITE_TOKEN is set
         if (process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN) {
+            console.log('Attempting to read from Vercel Blob...');
             try {
                 const blob = await get(BLOB_KEY);
+                console.log('Blob found:', !!blob);
+                
                 if (blob) {
+                    console.log('Blob URL:', blob.url);
                     const response = await fetch(blob.url);
-                    const data = await response.json();
-                    return data;
+                    const blobData = await response.json();
+                    console.log('Data from Blob:', JSON.stringify(blobData).substring(0, 100) + '...');
+                    
+                    // Compare local data with blob data
+                    const localTeamIds = parsedData.team.map(m => m.id);
+                    const blobTeamIds = blobData.team.map(m => m.id);
+                    
+                    // If blob has more team members, use blob data
+                    if (blobTeamIds.length > localTeamIds.length) {
+                        console.log('Blob has more team members, using blob data');
+                        return blobData;
+                    }
+                    
+                    // If local has more team members, update the blob
+                    if (localTeamIds.length > blobTeamIds.length) {
+                        console.log('Local has more team members, updating blob');
+                        try {
+                            const jsonData = JSON.stringify(parsedData, null, 2);
+                            await put(BLOB_KEY, jsonData, {
+                                contentType: 'application/json',
+                                access: 'public',
+                            });
+                            console.log('Blob updated with local data');
+                        } catch (updateError) {
+                            console.error('Error updating blob:', updateError);
+                        }
+                    }
+                } else {
+                    console.log('Blob not found, creating it with local data');
+                    try {
+                        const jsonData = JSON.stringify(parsedData, null, 2);
+                        const newBlob = await put(BLOB_KEY, jsonData, {
+                            contentType: 'application/json',
+                            access: 'public',
+                        });
+                        console.log('Created new blob:', newBlob.url);
+                    } catch (createError) {
+                        console.error('Error creating blob:', createError);
+                    }
                 }
             } catch (blobError) {
-                console.log('Blob not found or error reading from Blob:', blobError);
-                // If blob doesn't exist yet, continue to read from local file
+                console.log('Error reading from Blob:', blobError);
             }
+        } else {
+            console.log('Not using Vercel Blob');
         }
         
-        // Fallback to local file (for development or initial data)
-        initializeDataFile();
-        const data = readFileSync(DATA_FILE, 'utf8');
-        return JSON.parse(data);
+        return parsedData;
     } catch (error) {
         console.error('Error reading team:', error);
         return { team: [] };
@@ -85,31 +135,46 @@ async function readTeam() {
 // Write team data
 async function writeTeam(data) {
     try {
-        // In Vercel production with BLOB_READ_WRITE_TOKEN, write to Blob storage
+        console.log('Writing team data...');
+        console.log('Data to write:', JSON.stringify(data).substring(0, 100) + '...');
+        console.log('VERCEL env:', process.env.VERCEL);
+        console.log('BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
+        
+        // Always write to local file first
+        console.log('Writing to local file:', DATA_FILE);
+        writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+        console.log('Data successfully written to local file');
+        
+        // Then try to write to Blob if in Vercel with BLOB_READ_WRITE_TOKEN
         if (process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN) {
+            console.log('Attempting to write to Vercel Blob...');
             try {
                 const jsonData = JSON.stringify(data, null, 2);
                 const blob = await put(BLOB_KEY, jsonData, {
                     contentType: 'application/json',
                     access: 'public',
                 });
-                console.log('Data written to Vercel Blob:', blob.url);
-                return true;
+                console.log('Data successfully written to Vercel Blob:', blob.url);
+                
+                // Verify the data was written correctly by reading it back
+                console.log('Verifying data was written correctly...');
+                try {
+                    const verifyBlob = await get(BLOB_KEY);
+                    if (verifyBlob) {
+                        const verifyResponse = await fetch(verifyBlob.url);
+                        const verifyData = await verifyResponse.json();
+                        console.log('Verification data:', JSON.stringify(verifyData).substring(0, 100) + '...');
+                    }
+                } catch (verifyError) {
+                    console.log('Error verifying data:', verifyError);
+                }
             } catch (blobError) {
                 console.error('Error writing to Vercel Blob:', blobError);
-                // If Blob write fails, simulate success for demo purposes
-                console.log('Simulating successful write for demo purposes');
-                return true;
+                console.log('Continuing with local file only');
             }
-        } else if (process.env.VERCEL) {
-            // In Vercel without BLOB_READ_WRITE_TOKEN, simulate success
-            console.log('BLOB_READ_WRITE_TOKEN not set. Simulating successful write for demo purposes');
-            return true;
-        } else {
-            // In development, write to local file
-            writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-            return true;
         }
+        
+        return true;
     } catch (error) {
         console.error('Error writing team:', error);
         // For demo purposes, return true even if there's an error

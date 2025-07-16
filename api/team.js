@@ -2,11 +2,13 @@
 const fs = require('fs');
 const path = require('path');
 const Status = require('http-status-codes');
+const { put, list, del, get } = require('@vercel/blob');
 
 const { readFileSync, writeFileSync, existsSync } = fs;
 const { join } = path;
 
 const DATA_FILE = join(process.cwd(), 'data', 'team.json');
+const BLOB_KEY = 'team.json';
 
 // Initialize data file if it doesn't exist
 function initializeDataFile() {
@@ -53,8 +55,24 @@ function initializeDataFile() {
 }
 
 // Read team data
-function readTeam() {
+async function readTeam() {
     try {
+        // Try to read from Vercel Blob first
+        if (process.env.VERCEL) {
+            try {
+                const blob = await get(BLOB_KEY);
+                if (blob) {
+                    const response = await fetch(blob.url);
+                    const data = await response.json();
+                    return data;
+                }
+            } catch (blobError) {
+                console.log('Blob not found or error reading from Blob:', blobError);
+                // If blob doesn't exist yet, continue to read from local file
+            }
+        }
+        
+        // Fallback to local file (for development or initial data)
         initializeDataFile();
         const data = readFileSync(DATA_FILE, 'utf8');
         return JSON.parse(data);
@@ -65,24 +83,29 @@ function readTeam() {
 }
 
 // Write team data
-function writeTeam(data) {
-    // Check if we're in Vercel production environment (read-only filesystem)
-    if (process.env.READ_ONLY_FILESYSTEM === 'true') {
-        console.log('Running in read-only filesystem mode. Data changes will not be persisted.');
-        // In production, we'll simulate success without actually writing to the filesystem
-        return true;
-    }
-    
+async function writeTeam(data) {
     try {
-        writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-        return true;
+        // In Vercel production, write to Blob storage
+        if (process.env.VERCEL) {
+            const jsonData = JSON.stringify(data, null, 2);
+            const blob = await put(BLOB_KEY, jsonData, {
+                contentType: 'application/json',
+                access: 'public',
+            });
+            console.log('Data written to Vercel Blob:', blob.url);
+            return true;
+        } else {
+            // In development, write to local file
+            writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+            return true;
+        }
     } catch (error) {
         console.error('Error writing team:', error);
         return false;
     }
 }
 
-module.exports = function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -96,7 +119,7 @@ module.exports = function handler(req, res) {
         switch (req.method) {
             case 'GET':
                 // Get all team members (public endpoint)
-                const data = readTeam();
+                const data = await readTeam();
                 return res.status(Status.OK).json({
                     success: true,
                     team: data.team || []
@@ -121,7 +144,7 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
-                const currentData = readTeam();
+                const currentData = await readTeam();
                 const newId = Math.max(...currentData.team.map(m => m.id || 0), 0) + 1;
                 
                 const newMember = {
@@ -132,20 +155,11 @@ module.exports = function handler(req, res) {
                     photo: member.photo || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face'
                 };
                 
-                // In production with read-only filesystem, we'll simulate adding the team member
-                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
-                    console.log('Simulating team member addition in read-only mode:', newMember);
-                    return res.status(Status.CREATED).json({
-                        success: true,
-                        message: 'Team member added successfully (demo mode - changes not persisted)',
-                        member: newMember
-                    });
-                }
-                
-                // In development or with writable filesystem, actually save the data
+                // Add the new team member to the data
                 currentData.team.push(newMember);
                 
-                if (writeTeam(currentData)) {
+                // Save the updated data
+                if (await writeTeam(currentData)) {
                     return res.status(Status.CREATED).json({
                         success: true,
                         message: 'Team member added successfully',
@@ -176,7 +190,7 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
-                const deleteData = readTeam();
+                const deleteData = await readTeam();
                 const memberIndex = deleteData.team.findIndex(m => m.id === parseInt(memberId));
                 
                 if (memberIndex === -1) {
@@ -186,22 +200,14 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
+                // Store the team member to be deleted
                 const deletedMember = deleteData.team[memberIndex];
                 
-                // In production with read-only filesystem, we'll simulate deleting the team member
-                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
-                    console.log('Simulating team member deletion in read-only mode:', deletedMember);
-                    return res.status(Status.OK).json({
-                        success: true,
-                        message: 'Team member deleted successfully (demo mode - changes not persisted)',
-                        member: deletedMember
-                    });
-                }
-                
-                // In development or with writable filesystem, actually save the data
+                // Remove the team member from the array
                 deleteData.team.splice(memberIndex, 1);
                 
-                if (writeTeam(deleteData)) {
+                // Save the updated data
+                if (await writeTeam(deleteData)) {
                     return res.status(Status.OK).json({
                         success: true,
                         message: 'Team member deleted successfully',

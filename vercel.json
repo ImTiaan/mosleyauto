@@ -50,8 +50,5 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ],
-  "env": {
-    "READ_ONLY_FILESYSTEM": "true"
-  }
+  ]
 }

@@ -2,11 +2,13 @@
 const fs = require('fs');
 const path = require('path');
 const Status = require('http-status-codes');
+const { put, list, del, get } = require('@vercel/blob');
 
 const { readFileSync, writeFileSync, existsSync } = fs;
 const { join } = path;
 
 const DATA_FILE = join(process.cwd(), 'data', 'vehicles.json');
+const BLOB_KEY = 'vehicles.json';
 
 // Initialize data file if it doesn't exist
 function initializeDataFile() {
@@ -61,8 +63,24 @@ function initializeDataFile() {
 }
 
 // Read vehicles data
-function readVehicles() {
+async function readVehicles() {
     try {
+        // Try to read from Vercel Blob first
+        if (process.env.VERCEL) {
+            try {
+                const blob = await get(BLOB_KEY);
+                if (blob) {
+                    const response = await fetch(blob.url);
+                    const data = await response.json();
+                    return data;
+                }
+            } catch (blobError) {
+                console.log('Blob not found or error reading from Blob:', blobError);
+                // If blob doesn't exist yet, continue to read from local file
+            }
+        }
+        
+        // Fallback to local file (for development or initial data)
         initializeDataFile();
         const data = readFileSync(DATA_FILE, 'utf8');
         return JSON.parse(data);
@@ -73,24 +91,29 @@ function readVehicles() {
 }
 
 // Write vehicles data
-function writeVehicles(data) {
-    // Check if we're in Vercel production environment (read-only filesystem)
-    if (process.env.READ_ONLY_FILESYSTEM === 'true') {
-        console.log('Running in read-only filesystem mode. Data changes will not be persisted.');
-        // In production, we'll simulate success without actually writing to the filesystem
-        return true;
-    }
-    
+async function writeVehicles(data) {
     try {
-        writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-        return true;
+        // In Vercel production, write to Blob storage
+        if (process.env.VERCEL) {
+            const jsonData = JSON.stringify(data, null, 2);
+            const blob = await put(BLOB_KEY, jsonData, {
+                contentType: 'application/json',
+                access: 'public',
+            });
+            console.log('Data written to Vercel Blob:', blob.url);
+            return true;
+        } else {
+            // In development, write to local file
+            writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+            return true;
+        }
     } catch (error) {
         console.error('Error writing vehicles:', error);
         return false;
     }
 }
 
-module.exports = function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -104,7 +127,7 @@ module.exports = function handler(req, res) {
         switch (req.method) {
             case 'GET':
                 // Get all vehicles (public endpoint)
-                const data = readVehicles();
+                const data = await readVehicles();
                 return res.status(Status.OK).json({
                     success: true,
                     vehicles: data.vehicles || []
@@ -129,7 +152,7 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
-                const currentData = readVehicles();
+                const currentData = await readVehicles();
                 const newId = Math.max(...currentData.vehicles.map(v => v.id || 0), 0) + 1;
                 
                 const newVehicle = {
@@ -145,20 +168,11 @@ module.exports = function handler(req, res) {
                     image: vehicle.image || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop&crop=center'
                 };
                 
-                // In production with read-only filesystem, we'll simulate adding the vehicle
-                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
-                    console.log('Simulating vehicle addition in read-only mode:', newVehicle);
-                    return res.status(Status.CREATED).json({
-                        success: true,
-                        message: 'Vehicle added successfully (demo mode - changes not persisted)',
-                        vehicle: newVehicle
-                    });
-                }
-                
-                // In development or with writable filesystem, actually save the data
+                // Add the new vehicle to the data
                 currentData.vehicles.push(newVehicle);
                 
-                if (writeVehicles(currentData)) {
+                // Save the updated data
+                if (await writeVehicles(currentData)) {
                     return res.status(Status.CREATED).json({
                         success: true,
                         message: 'Vehicle added successfully',
@@ -189,7 +203,7 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
-                const deleteData = readVehicles();
+                const deleteData = await readVehicles();
                 const vehicleIndex = deleteData.vehicles.findIndex(v => v.id === parseInt(vehicleId));
                 
                 if (vehicleIndex === -1) {
@@ -199,22 +213,14 @@ module.exports = function handler(req, res) {
                     });
                 }
                 
+                // Store the vehicle to be deleted
                 const deletedVehicle = deleteData.vehicles[vehicleIndex];
                 
-                // In production with read-only filesystem, we'll simulate deleting the vehicle
-                if (process.env.READ_ONLY_FILESYSTEM === 'true') {
-                    console.log('Simulating vehicle deletion in read-only mode:', deletedVehicle);
-                    return res.status(Status.OK).json({
-                        success: true,
-                        message: 'Vehicle deleted successfully (demo mode - changes not persisted)',
-                        vehicle: deletedVehicle
-                    });
-                }
-                
-                // In development or with writable filesystem, actually save the data
+                // Remove the vehicle from the array
                 deleteData.vehicles.splice(vehicleIndex, 1);
                 
-                if (writeVehicles(deleteData)) {
+                // Save the updated data
+                if (await writeVehicles(deleteData)) {
                     return res.status(Status.OK).json({
                         success: true,
                         message: 'Vehicle deleted successfully',

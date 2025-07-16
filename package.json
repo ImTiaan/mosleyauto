@@ -9,12 +9,18 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
+    "@vercel/blob": "^1.1.1",
     "http-status-codes": "^2.3.0"
   },
   "devDependencies": {
     "vercel": "^32.0.0"
   },
-  "keywords": ["car", "dealership", "gta", "roleplay"],
+  "keywords": [
+    "car",
+    "dealership",
+    "gta",
+    "roleplay"
+  ],
   "author": "Mosley Auto",
   "license": "MIT"
 }

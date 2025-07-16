@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosley Auto - Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff0000;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mosley Auto - Debug Page</h1>
+    
+    <div class="section">
+        <h2>Debug API</h2>
+        <button id="debugBtn">Fetch Debug Info</button>
+        <pre id="debugOutput">Click the button to fetch debug info...</pre>
+    </div>
+    
+    <div class="section">
+        <h2>Stock API</h2>
+        <button id="stockBtn">Fetch Stock Data</button>
+        <pre id="stockOutput">Click the button to fetch stock data...</pre>
+    </div>
+    
+    <div class="section">
+        <h2>Force Blob Sync</h2>
+        <p>This will attempt to force the local data to be synced with the Blob storage.</p>
+        <button id="syncBtn">Force Sync</button>
+        <pre id="syncOutput">Click the button to force sync...</pre>
+    </div>
+    
+    <script>
+        // Debug API
+        document.getElementById('debugBtn').addEventListener('click', async () => {
+            const output = document.getElementById('debugOutput');
+            output.textContent = 'Fetching debug info...';
+            
+            try {
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/stock/debug?t=${timestamp}`);
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        // Stock API
+        document.getElementById('stockBtn').addEventListener('click', async () => {
+            const output = document.getElementById('stockOutput');
+            output.textContent = 'Fetching stock data...';
+            
+            try {
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/stock?t=${timestamp}`);
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        // Force Sync
+        document.getElementById('syncBtn').addEventListener('click', async () => {
+            const output = document.getElementById('syncOutput');
+            output.textContent = 'Forcing sync...';
+            
+            try {
+                // First get the current data from the local file
+                const timestamp1 = new Date().getTime();
+                const stockResponse = await fetch(`/api/stock?t=${timestamp1}`);
+                const stockData = await stockResponse.json();
+                
+                // Then add a dummy vehicle to force a write to the Blob
+                const dummyVehicle = {
+                    make: "Debug",
+                    model: "Sync",
+                    year: 2024,
+                    price: 1,
+                    mileage: 0,
+                    color: "Debug",
+                    transmission: "Debug",
+                    description: "Debug vehicle to force sync",
+                    image: "https://via.placeholder.com/400x300"
+                };
+                
+                const addResponse = await fetch('/api/stock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        adminKey: 'mosley2024',
+                        vehicle: dummyVehicle
+                    })
+                });
+                
+                const addData = await addResponse.json();
+                
+                // Then get the debug info to see if it worked
+                const timestamp2 = new Date().getTime();
+                const debugResponse = await fetch(`/api/stock/debug?t=${timestamp2}`);
+                const debugData = await debugResponse.json();
+                
+                output.textContent = JSON.stringify({
+                    originalStock: stockData,
+                    addResult: addData,
+                    debugAfterAdd: debugData
+                }, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

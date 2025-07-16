@@ -23,6 +23,10 @@
   ],
   "routes": [
     {
+      "src": "/api/stock/debug",
+      "dest": "/api/stock.js"
+    },
+    {
       "src": "/api/stock",
       "dest": "/api/stock.js"
     },
@@ -45,6 +49,10 @@
     {
       "src": "/assets/(.*)",
       "dest": "/assets/$1"
+    },
+    {
+      "src": "/debug",
+      "dest": "/debug.html"
     },
     {
       "src": "/(.*)",

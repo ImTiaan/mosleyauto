@@ -65,25 +65,40 @@ function initializeDataFile() {
 // Read vehicles data
 async function readVehicles() {
     try {
+        console.log('Reading vehicles data...');
+        console.log('VERCEL env:', process.env.VERCEL);
+        console.log('BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
+        
         // Try to read from Vercel Blob first if BLOB_READ_WRITE_TOKEN is set
         if (process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN) {
+            console.log('Attempting to read from Vercel Blob...');
             try {
                 const blob = await get(BLOB_KEY);
+                console.log('Blob found:', !!blob);
                 if (blob) {
+                    console.log('Blob URL:', blob.url);
                     const response = await fetch(blob.url);
                     const data = await response.json();
+                    console.log('Data from Blob:', JSON.stringify(data).substring(0, 100) + '...');
                     return data;
+                } else {
+                    console.log('Blob not found, falling back to local file');
                 }
             } catch (blobError) {
-                console.log('Blob not found or error reading from Blob:', blobError);
+                console.log('Error reading from Blob:', blobError);
                 // If blob doesn't exist yet, continue to read from local file
             }
+        } else {
+            console.log('Not using Vercel Blob, falling back to local file');
         }
         
         // Fallback to local file (for development or initial data)
+        console.log('Reading from local file:', DATA_FILE);
         initializeDataFile();
         const data = readFileSync(DATA_FILE, 'utf8');
-        return JSON.parse(data);
+        const parsedData = JSON.parse(data);
+        console.log('Data from local file:', JSON.stringify(parsedData).substring(0, 100) + '...');
+        return parsedData;
     } catch (error) {
         console.error('Error reading vehicles:', error);
         return { vehicles: [] };
@@ -93,15 +108,35 @@ async function readVehicles() {
 // Write vehicles data
 async function writeVehicles(data) {
     try {
+        console.log('Writing vehicles data...');
+        console.log('Data to write:', JSON.stringify(data).substring(0, 100) + '...');
+        console.log('VERCEL env:', process.env.VERCEL);
+        console.log('BLOB_READ_WRITE_TOKEN set:', !!process.env.BLOB_READ_WRITE_TOKEN);
+        
         // In Vercel production with BLOB_READ_WRITE_TOKEN, write to Blob storage
         if (process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN) {
+            console.log('Attempting to write to Vercel Blob...');
             try {
                 const jsonData = JSON.stringify(data, null, 2);
                 const blob = await put(BLOB_KEY, jsonData, {
                     contentType: 'application/json',
                     access: 'public',
                 });
-                console.log('Data written to Vercel Blob:', blob.url);
+                console.log('Data successfully written to Vercel Blob:', blob.url);
+                
+                // Verify the data was written correctly by reading it back
+                console.log('Verifying data was written correctly...');
+                try {
+                    const verifyBlob = await get(BLOB_KEY);
+                    if (verifyBlob) {
+                        const verifyResponse = await fetch(verifyBlob.url);
+                        const verifyData = await verifyResponse.json();
+                        console.log('Verification data:', JSON.stringify(verifyData).substring(0, 100) + '...');
+                    }
+                } catch (verifyError) {
+                    console.log('Error verifying data:', verifyError);
+                }
+                
                 return true;
             } catch (blobError) {
                 console.error('Error writing to Vercel Blob:', blobError);
@@ -115,7 +150,9 @@ async function writeVehicles(data) {
             return true;
         } else {
             // In development, write to local file
+            console.log('Writing to local file:', DATA_FILE);
             writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+            console.log('Data successfully written to local file');
             return true;
         }
     } catch (error) {
@@ -144,6 +181,62 @@ module.exports = async function handler(req, res) {
     }
     
     try {
+        // Special debug endpoint
+        if (req.url.includes('/debug')) {
+            console.log('Debug endpoint called');
+            
+            // Check if Blob exists
+            let blobExists = false;
+            let blobUrl = '';
+            let blobData = null;
+            
+            try {
+                if (process.env.BLOB_READ_WRITE_TOKEN) {
+                    const blob = await get(BLOB_KEY);
+                    if (blob) {
+                        blobExists = true;
+                        blobUrl = blob.url;
+                        const response = await fetch(blob.url);
+                        blobData = await response.json();
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking blob:', error);
+            }
+            
+            // Read local file
+            let localData = null;
+            try {
+                if (existsSync(DATA_FILE)) {
+                    const fileContent = readFileSync(DATA_FILE, 'utf8');
+                    localData = JSON.parse(fileContent);
+                }
+            } catch (error) {
+                console.error('Error reading local file:', error);
+            }
+            
+            return res.status(Status.OK).json({
+                success: true,
+                debug: {
+                    environment: {
+                        vercel: !!process.env.VERCEL,
+                        blobToken: !!process.env.BLOB_READ_WRITE_TOKEN,
+                        nodeEnv: process.env.NODE_ENV,
+                        cwd: process.cwd()
+                    },
+                    blob: {
+                        exists: blobExists,
+                        url: blobUrl,
+                        data: blobData
+                    },
+                    local: {
+                        exists: !!localData,
+                        data: localData
+                    }
+                }
+            });
+        }
+        
         switch (req.method) {
             case 'GET':
                 // Get all vehicles (public endpoint)

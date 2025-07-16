@@ -50,5 +50,8 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ]
+  ],
+  "env": {
+    "VERCEL_NOTES": "For persistent storage, add BLOB_READ_WRITE_TOKEN in the Vercel dashboard"
+  }
 }

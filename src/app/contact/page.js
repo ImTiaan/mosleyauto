@@ -29,11 +29,15 @@ export default function Contact() {
               <li style={{ marginBottom: '0.5rem' }}>
                 <strong>Main Phone:</strong> 555 - 8791
               </li>
-              <li style={{ marginBottom: '0.5rem' }}>
-                <strong>Mobile Repairs:</strong> 554 - 4749
-              </li>
-              <li style={{ marginBottom: '0.5rem' }}>
-                <strong>Towing:</strong> 555 - 3641
+              <li style={{ marginBottom: '1rem' }}>
+                <strong>Mobile Repairs & Towing:</strong>
+                <div style={{ marginLeft: '1rem', marginTop: '0.25rem' }}>
+                  <div>554 - 4749</div>
+                  <div>555 - 3641</div>
+                  <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>
+                    (One of our two mechanics will be on duty)
+                  </div>
+                </div>
               </li>
             </ul>
             

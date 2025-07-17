@@ -396,7 +396,7 @@ export default function SecretInventory() {
                     </div>
                     
                     <button className="btn btn-primary" style={{ width: '100%' }}>
-                      Contact About This Vehicle
+                      CALL 555-3641 TO DISCUSS
                     </button>
                   </div>
                 </div>

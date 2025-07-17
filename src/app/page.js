@@ -47,20 +47,17 @@ export default function Home() {
           </p>
           <div style={{
             width: '100%',
-            height: 'auto',
             marginTop: '1rem',
             borderRadius: '8px',
             overflow: 'hidden'
           }}>
-            <Image
+            <img
               src="/images/General/mosley_map.png"
               alt="Mosley Auto Location Map"
-              width={1200}
-              height={600}
               style={{
                 width: '100%',
                 height: 'auto',
-                objectFit: 'cover'
+                borderRadius: '8px'
               }}
             />
           </div>

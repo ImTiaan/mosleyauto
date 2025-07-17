@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
+// Mark this route as dynamic to fix Vercel deployment
+export const dynamic = 'force-dynamic';
+
 /**
  * POST handler for authentication
  */

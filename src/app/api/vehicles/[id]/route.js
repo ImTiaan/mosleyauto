@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { updateVehicle, deleteVehicle } from '@/lib/blob';
 
+// Mark this route as dynamic to fix Vercel deployment
+export const dynamic = 'force-dynamic';
+
 /**
  * PUT handler for updating a vehicle
  */

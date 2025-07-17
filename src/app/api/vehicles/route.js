@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getVehicles, addVehicle } from '@/lib/blob';
 
+// Mark this route as dynamic to fix Vercel deployment
+export const dynamic = 'force-dynamic';
+
 /**
  * GET handler for fetching vehicles
  */

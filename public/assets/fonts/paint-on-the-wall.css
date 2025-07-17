@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'Paint On The Wall';
+  src: url('/assets/fonts/Paint On The Wall.ttf') format('truetype'),
+       url('/assets/fonts/Paint On The Wall.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.mosley-font {
+  font-family: 'Paint On The Wall', sans-serif;
+  color: #ff0000; /* Red color for Mosley Auto */
+}

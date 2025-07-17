@@ -143,3 +143,17 @@ When implementing the manufacturer-based filtering system:
 2. When a manufacturer is selected, filter the model dropdown to only show vehicles from that manufacturer
 3. Store the manufacturer-model relationships in a structured format (JSON or database)
 4. Include vehicle specifications (top speed, acceleration, handling) where relevant
+
+## Example Vehicle Display
+
+```
+BF WEEVIL
+$999,999
+
+Mileage: 50,000
+Condition: Pristine
+Color: Blue
+✓ Upgraded
+```
+
+This example shows how a vehicle should be displayed in the inventory, using only the in-game manufacturer name (BF) rather than the real-world inspiration (Volkswagen).

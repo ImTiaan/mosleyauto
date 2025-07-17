@@ -57,10 +57,10 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
       if (selectedManufacturer) {
         setAvailableModels(selectedManufacturer.models);
         
-        // Update the make field to match the manufacturer's real-world inspiration
+        // Update the make field to match the in-game manufacturer name
         setFormData(prev => ({
           ...prev,
-          make: selectedManufacturer.realWorldInspiration
+          make: selectedManufacturer.name
         }));
       } else {
         setAvailableModels([]);
@@ -229,7 +229,7 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
             <option value="">Select Manufacturer</option>
             {vehicleData.manufacturers.map(manufacturer => (
               <option key={manufacturer.name} value={manufacturer.name}>
-                {manufacturer.name} ({manufacturer.realWorldInspiration})
+                {manufacturer.name}
               </option>
             ))}
           </select>
@@ -255,7 +255,7 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
             disabled={loading}
           />
           <p style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#666' }}>
-            Auto-filled based on manufacturer selection
+            Auto-filled with the selected manufacturer
           </p>
         </div>
         

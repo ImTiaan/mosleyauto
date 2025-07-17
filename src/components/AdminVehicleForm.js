@@ -25,6 +25,7 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [availableModels, setAvailableModels] = useState([]);
+  const [manualModelEntry, setManualModelEntry] = useState(false);
   
   // Color options based on vehicle type
   const regularColors = {
@@ -82,6 +83,11 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
         // Update bgColor based on manufacturer
         bgColor: colorOptions[value] || colorOptions['Other']
       }));
+      
+      // Reset manual entry when manufacturer changes
+      if (manualModelEntry) {
+        setManualModelEntry(false);
+      }
     } else if (name === 'make') {
       // When make changes, update the bgColor if it exists in our predefined colors
       const newBgColor = colorOptions[value] || colorOptions['Other'];
@@ -90,6 +96,15 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
         ...prev,
         [name]: value,
         bgColor: newBgColor
+      }));
+    } else if (name === 'manualModelEntry') {
+      // Toggle between dropdown and manual entry
+      setManualModelEntry(checked);
+      
+      // Clear the model field when switching modes
+      setFormData(prev => ({
+        ...prev,
+        model: ''
       }));
     } else {
       setFormData(prev => ({
@@ -260,33 +275,77 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
         </div>
         
         <div>
-          <label htmlFor="model" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Model <span style={{ color: 'red' }}>*</span>
-          </label>
-          <select
-            id="model"
-            name="model"
-            value={formData.model}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              border: '1px solid #ccc'
-            }}
-            required
-            disabled={loading || !formData.manufacturer}
-          >
-            <option value="">Select Model</option>
-            {availableModels.map(model => (
-              <option key={model.modelName} value={model.displayName}>
-                {model.displayName}
-              </option>
-            ))}
-          </select>
-          {!formData.manufacturer && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <label htmlFor="model">
+              Model <span style={{ color: 'red' }}>*</span>
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                id="manualModelEntry"
+                name="manualModelEntry"
+                checked={manualModelEntry}
+                onChange={handleChange}
+                style={{ marginRight: '0.5rem' }}
+                disabled={loading}
+              />
+              <label htmlFor="manualModelEntry" style={{ fontSize: '0.8rem', color: '#666' }}>
+                Enter manually
+              </label>
+            </div>
+          </div>
+          
+          {manualModelEntry ? (
+            // Manual text input for model
+            <input
+              type="text"
+              id="model"
+              name="model"
+              value={formData.model}
+              onChange={handleChange}
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                borderRadius: '4px',
+                border: '1px solid #ccc'
+              }}
+              placeholder="Enter model name"
+              required
+              disabled={loading}
+            />
+          ) : (
+            // Dropdown selection for model
+            <select
+              id="model"
+              name="model"
+              value={formData.model}
+              onChange={handleChange}
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                borderRadius: '4px',
+                border: '1px solid #ccc'
+              }}
+              required
+              disabled={loading || !formData.manufacturer}
+            >
+              <option value="">Select Model</option>
+              {availableModels.map(model => (
+                <option key={model.modelName} value={model.displayName}>
+                  {model.displayName}
+                </option>
+              ))}
+            </select>
+          )}
+          
+          {!formData.manufacturer && !manualModelEntry && (
             <p style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#666' }}>
-              Please select a manufacturer first
+              Please select a manufacturer first or check "Enter manually"
+            </p>
+          )}
+          {manualModelEntry && (
+            <p style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#666' }}>
+              You can enter any model name manually
             </p>
           )}
         </div>

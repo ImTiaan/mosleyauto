@@ -18,7 +18,7 @@ const mockVehicles = [
     model: 'Emperor',
     price: 12500,
     mileage: 75000,
-    condition: 'Good',
+    condition: 'Fair',
     color: 'Blue',
     imageUrl: defaultImageUrl,
     bgColor: '#3498db',
@@ -30,7 +30,7 @@ const mockVehicles = [
     model: 'Vamos',
     price: 18900,
     mileage: 45000,
-    condition: 'Excellent',
+    condition: 'Good',
     color: 'Red',
     imageUrl: defaultImageUrl,
     bgColor: '#e74c3c',
@@ -42,7 +42,7 @@ const mockVehicles = [
     model: 'Dominator',
     price: 22500,
     mileage: 35000,
-    condition: 'Like New',
+    condition: 'Pristine',
     color: 'Black',
     imageUrl: defaultImageUrl,
     bgColor: '#2c3e50',
@@ -54,7 +54,7 @@ const mockVehicles = [
     model: 'Sultan',
     price: 24000,
     mileage: 28000,
-    condition: 'Excellent',
+    condition: 'Good',
     color: 'Silver',
     imageUrl: defaultImageUrl,
     bgColor: '#7f8c8d',
@@ -66,7 +66,7 @@ const mockVehicles = [
     model: 'Banshee',
     price: 35000,
     mileage: 15000,
-    condition: 'Like New',
+    condition: 'Pristine',
     color: 'Yellow',
     imageUrl: defaultImageUrl,
     bgColor: '#f1c40f',
@@ -78,7 +78,7 @@ const mockVehicles = [
     model: 'Comet',
     price: 42000,
     mileage: 12000,
-    condition: 'Like New',
+    condition: 'Pristine',
     color: 'White',
     imageUrl: defaultImageUrl,
     bgColor: '#ecf0f1',
@@ -280,11 +280,10 @@ export default function Inventory() {
                   style={{ width: '100%', padding: '0.5rem' }}
                 >
                   <option value="">Any condition</option>
-                  <option value="Like New">Like New</option>
-                  <option value="Excellent">Excellent</option>
+                  <option value="Pristine">Pristine</option>
                   <option value="Good">Good</option>
                   <option value="Fair">Fair</option>
-                  <option value="Poor">Poor</option>
+                  <option value="Derelict">Derelict</option>
                 </select>
               </div>
               

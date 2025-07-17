@@ -9,7 +9,7 @@ const roboto = Roboto({
 });
 
 export const metadata = {
-  title: 'Mosley Auto - Used Car Dealership & Repair Shop',
+  title: 'Mosley Auto Service - Used Car Dealership & Repair Shop',
   description: 'The best used car dealership and repair shop in Los Santos. Located at the corner of Carson and Strawberry, opposite the mega mall.',
 };
 

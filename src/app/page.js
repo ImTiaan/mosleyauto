@@ -16,7 +16,7 @@ export default function Home() {
       <Header />
       
       <div className="hero-section">
-        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>MOSLEY AUTO</h1>
+        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>MOSLEY AUTO SERVICE</h1>
         <p style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>The Best Used Car Dealership in Los Santos!</p>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Link href="/inventory" className="btn btn-primary">

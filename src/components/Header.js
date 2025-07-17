@@ -24,7 +24,7 @@ export default function Header() {
         <div className="container header-container">
           <Link href="/" className="logo-link">
             <h1 className="mosley-font site-logo">
-              MOSLEY AUTO
+              MOSLEY AUTO SERVICE
             </h1>
           </Link>
           

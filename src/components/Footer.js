@@ -17,7 +17,7 @@ export default function Footer() {
           gap: '2rem',
         }}>
           <div>
-            <h3 className="mosley-font" style={{ color: 'white' }}>MOSLEY AUTO</h3>
+            <h3 className="mosley-font" style={{ color: 'white' }}>MOSLEY AUTO SERVICE</h3>
             <p>The best used car dealership and repair shop in Los Santos.</p>
             <p style={{ marginTop: '1rem' }}>
               Corner of Carson and Strawberry,<br />
@@ -63,7 +63,7 @@ export default function Footer() {
           paddingTop: '1rem',
           textAlign: 'center',
         }}>
-          <p>&copy; {currentYear} Mosley Auto. All rights reserved.</p>
+          <p>&copy; {currentYear} Mosley Auto Service. All rights reserved.</p>
           <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
             This website is best viewed with Internet Explorer 6.0 or Netscape Navigator.
           </p>

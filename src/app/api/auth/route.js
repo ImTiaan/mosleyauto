@@ -45,7 +45,7 @@ export async function POST(request) {
       }
     } else if (type === 'secret') {
       // Check secret inventory password
-      const secretPassword = process.env.SECRET_INVENTORY_PASSWORD || 'stolen123';
+      const secretPassword = process.env.SECRET_INVENTORY_PASSWORD || 'boosted420';
       
       if (password === secretPassword) {
         // Set secret inventory authentication cookie

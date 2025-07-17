@@ -45,16 +45,24 @@ export default function Home() {
           <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
             Located at the corner of Carson and Strawberry, opposite the mega mall.
           </p>
-          <div style={{ 
-            width: '100%', 
-            height: '300px', 
-            backgroundColor: '#ccc', 
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: '1rem'
+          <div style={{
+            width: '100%',
+            height: 'auto',
+            marginTop: '1rem',
+            borderRadius: '8px',
+            overflow: 'hidden'
           }}>
-            <p>Map Image Will Go Here</p>
+            <Image
+              src="/images/General/mosley_map.png"
+              alt="Mosley Auto Location Map"
+              width={1200}
+              height={600}
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'cover'
+              }}
+            />
           </div>
         </section>
       </div>

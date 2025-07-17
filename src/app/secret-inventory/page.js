@@ -312,10 +312,6 @@ export default function SecretInventory() {
             position: 'relative',
             overflow: 'hidden'
           }}>
-            <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-              <Starburst text="SHHHH!" size={80} color="#ff0000" textColor="#ffffff" />
-            </div>
-            
             <h1 style={{ color: '#fff' }}>Secret Inventory</h1>
             <p style={{ marginBottom: '0' }}>
               These vehicles have "fallen off the truck" and are available at special prices.

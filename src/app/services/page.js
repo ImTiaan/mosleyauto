@@ -2,27 +2,12 @@
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Starburst from '@/components/Starburst';
 
 // Services data
 const services = [
   {
-    id: 'tow',
-    name: 'Car Tow',
-    price: 800,
-    description: 'Stuck somewhere? We\'ll tow your vehicle to our shop or any location in Los Santos. Our tow service is available 24/7 and covers the entire city. We pride ourselves on quick response times and professional service.',
-    icon: '🚚',
-    features: [
-      'Available 24/7',
-      'City-wide service',
-      'Fast response times',
-      'Professional drivers',
-      'Secure vehicle transport'
-    ]
-  },
-  {
     id: 'repairs',
-    name: 'Repairs in Store',
+    name: 'Repairs',
     price: 500,
     description: 'Full service repairs at our shop. We\'ll fix any issue with your vehicle, from minor dents to major mechanical problems. Our experienced mechanics use only the best tools and parts to ensure your vehicle runs smoothly.',
     icon: '🔧',
@@ -32,6 +17,20 @@ const services = [
       'Comprehensive diagnostics',
       'Fair pricing',
       'Quick turnaround'
+    ]
+  },
+  {
+    id: 'tow',
+    name: 'Towing',
+    price: 800,
+    description: 'Stuck somewhere? We\'ll tow your vehicle to our shop or any location in Los Santos. Our tow service is available 24/7 and covers the entire city. We pride ourselves on quick response times and professional service.',
+    icon: '🚚',
+    features: [
+      'Available 24/7',
+      'City-wide service',
+      'Fast response times',
+      'Professional drivers',
+      'Secure vehicle transport'
     ]
   },
   {
@@ -78,7 +77,7 @@ const services = [
   },
   {
     id: 'paint',
-    name: 'Spray Paint Car',
+    name: 'Spray Job',
     price: 750,
     description: 'Give your vehicle a fresh new look with our professional paint service. Choose from a wide range of colors and finishes to customize your ride. Our paint jobs are durable and look great, helping your vehicle stand out on the streets of Los Santos.',
     icon: '🎨',
@@ -101,10 +100,6 @@ export default function Services() {
         <div style={{ position: 'relative', marginBottom: '2rem' }}>
           <h1>Our Services</h1>
           <p>Quality automotive services at competitive prices.</p>
-          
-          <div style={{ position: 'absolute', top: '-20px', right: '20px' }}>
-            <Starburst text="BEST PRICES!" size={100} />
-          </div>
         </div>
         
         <div style={{ marginBottom: '3rem' }}>
@@ -182,9 +177,6 @@ export default function Services() {
                 </ul>
               </div>
               
-              <button className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-                Book Now
-              </button>
             </div>
           ))}
         </div>

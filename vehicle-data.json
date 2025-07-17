@@ -1,0 +1,383 @@
+{
+  "manufacturers": [
+    {
+      "name": "Albany",
+      "realWorldInspiration": "Cadillac",
+      "models": [
+        {
+          "modelName": "emperor",
+          "displayName": "Emperor",
+          "realWorldInspiration": "1970s-1980s Cadillac sedans",
+          "category": "Sedan"
+        },
+        {
+          "modelName": "primo",
+          "displayName": "Primo",
+          "realWorldInspiration": "1990s Cadillac/Chevrolet sedans",
+          "category": "Sedan"
+        },
+        {
+          "modelName": "buccaneer",
+          "displayName": "Buccaneer",
+          "realWorldInspiration": "1970s Cadillac Eldorado",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "cavalcade",
+          "displayName": "Cavalcade",
+          "realWorldInspiration": "Cadillac Escalade",
+          "category": "SUV"
+        },
+        {
+          "modelName": "virgo",
+          "displayName": "Virgo",
+          "realWorldInspiration": "1970s-80s Cadillac/Lincoln",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "washington",
+          "displayName": "Washington",
+          "realWorldInspiration": "2000s Cadillac/Lincoln sedan",
+          "category": "Sedan"
+        }
+      ]
+    },
+    {
+      "name": "Annis",
+      "realWorldInspiration": "Nissan",
+      "models": [
+        {
+          "modelName": "elegy",
+          "displayName": "Elegy RH8",
+          "realWorldInspiration": "Nissan GT-R (R35)",
+          "category": "Sports"
+        },
+        {
+          "modelName": "elegy2",
+          "displayName": "Elegy Retro Custom",
+          "realWorldInspiration": "Nissan Skyline GT-R (R32/R33)",
+          "category": "Sports"
+        },
+        {
+          "modelName": "euros",
+          "displayName": "Euros",
+          "realWorldInspiration": "Nissan 300ZX",
+          "category": "Sports"
+        },
+        {
+          "modelName": "re7b",
+          "displayName": "RE-7B",
+          "realWorldInspiration": "Nissan R90C race car",
+          "category": "Super"
+        },
+        {
+          "modelName": "zr350",
+          "displayName": "ZR350",
+          "realWorldInspiration": "Mazda RX-7",
+          "category": "Sports"
+        }
+      ]
+    },
+    {
+      "name": "Benefactor",
+      "realWorldInspiration": "Mercedes-Benz",
+      "models": [
+        {
+          "modelName": "dubsta",
+          "displayName": "Dubsta",
+          "realWorldInspiration": "Mercedes-Benz G-Class",
+          "category": "SUV"
+        },
+        {
+          "modelName": "glendale",
+          "displayName": "Glendale",
+          "realWorldInspiration": "Mercedes-Benz W115",
+          "category": "Sedan"
+        },
+        {
+          "modelName": "schafter2",
+          "displayName": "Schafter",
+          "realWorldInspiration": "Mercedes-Benz E-Class",
+          "category": "Sedan"
+        },
+        {
+          "modelName": "stirling",
+          "displayName": "Stirling GT",
+          "realWorldInspiration": "Mercedes-Benz 300SL Gullwing",
+          "category": "Sports Classic"
+        },
+        {
+          "modelName": "xls",
+          "displayName": "XLS",
+          "realWorldInspiration": "Mercedes-Benz GL-Class",
+          "category": "SUV"
+        }
+      ]
+    },
+    {
+      "name": "BF",
+      "realWorldInspiration": "Volkswagen",
+      "models": [
+        {
+          "modelName": "bifta",
+          "displayName": "Bifta",
+          "realWorldInspiration": "VW-based dune buggy",
+          "category": "Off-road"
+        },
+        {
+          "modelName": "dune",
+          "displayName": "Dune Buggy",
+          "realWorldInspiration": "VW-based dune buggy",
+          "category": "Off-road"
+        },
+        {
+          "modelName": "injection",
+          "displayName": "Injection",
+          "realWorldInspiration": "VW Baja Bug",
+          "category": "Off-road"
+        },
+        {
+          "modelName": "surfer",
+          "displayName": "Surfer",
+          "realWorldInspiration": "Volkswagen Type 2",
+          "category": "Van"
+        },
+        {
+          "modelName": "weevil",
+          "displayName": "Weevil",
+          "realWorldInspiration": "Volkswagen Beetle",
+          "category": "Compact"
+        },
+        {
+          "modelName": "weevil2",
+          "displayName": "Weevil Custom",
+          "realWorldInspiration": "Modified VW Beetle",
+          "category": "Compact"
+        }
+      ]
+    },
+    {
+      "name": "Bravado",
+      "realWorldInspiration": "Dodge",
+      "models": [
+        {
+          "modelName": "banshee",
+          "displayName": "Banshee",
+          "realWorldInspiration": "Dodge Viper",
+          "category": "Sports"
+        },
+        {
+          "modelName": "buffalo",
+          "displayName": "Buffalo",
+          "realWorldInspiration": "Dodge Charger",
+          "category": "Sports"
+        },
+        {
+          "modelName": "gauntlet",
+          "displayName": "Gauntlet",
+          "realWorldInspiration": "Dodge Challenger",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "gauntlet4",
+          "displayName": "Gauntlet Hellfire",
+          "realWorldInspiration": "Dodge Challenger Hellcat",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "rumpo",
+          "displayName": "Rumpo",
+          "realWorldInspiration": "Dodge Ram Van",
+          "category": "Van"
+        },
+        {
+          "modelName": "youga",
+          "displayName": "Youga",
+          "realWorldInspiration": "Dodge A100",
+          "category": "Van"
+        }
+      ]
+    },
+    {
+      "name": "Declasse",
+      "realWorldInspiration": "Chevrolet",
+      "models": [
+        {
+          "modelName": "impaler",
+          "displayName": "Impaler",
+          "realWorldInspiration": "Chevrolet Impala (1960s)",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "moonbeam",
+          "displayName": "Moonbeam",
+          "realWorldInspiration": "Chevrolet Astro/GMC Safari",
+          "category": "Van"
+        },
+        {
+          "modelName": "sabregt",
+          "displayName": "Sabre GT",
+          "realWorldInspiration": "Chevrolet Chevelle SS",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "tampa",
+          "displayName": "Tampa",
+          "realWorldInspiration": "Chevrolet Chevelle",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "tornado",
+          "displayName": "Tornado",
+          "realWorldInspiration": "1950s Chevrolet Bel Air",
+          "category": "Sports Classic"
+        },
+        {
+          "modelName": "vamos",
+          "displayName": "Vamos",
+          "realWorldInspiration": "Chevrolet Nova",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "vigero",
+          "displayName": "Vigero",
+          "realWorldInspiration": "Chevrolet Camaro (1969)",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "yosemite",
+          "displayName": "Yosemite",
+          "realWorldInspiration": "Chevrolet C10",
+          "category": "Utility"
+        }
+      ]
+    },
+    {
+      "name": "Grotti",
+      "realWorldInspiration": "Ferrari",
+      "models": [
+        {
+          "modelName": "carbonizzare",
+          "displayName": "Carbonizzare",
+          "realWorldInspiration": "Ferrari California",
+          "category": "Sports"
+        },
+        {
+          "modelName": "cheetah",
+          "displayName": "Cheetah",
+          "realWorldInspiration": "Ferrari Enzo",
+          "category": "Super"
+        },
+        {
+          "modelName": "furia",
+          "displayName": "Furia",
+          "realWorldInspiration": "Ferrari F8 Tributo",
+          "category": "Super"
+        },
+        {
+          "modelName": "italigto",
+          "displayName": "Itali GTO",
+          "realWorldInspiration": "Ferrari 812 Superfast",
+          "category": "Super"
+        },
+        {
+          "modelName": "turismor",
+          "displayName": "Turismo R",
+          "realWorldInspiration": "Ferrari LaFerrari",
+          "category": "Super"
+        },
+        {
+          "modelName": "x80proto",
+          "displayName": "X80 Proto",
+          "realWorldInspiration": "Ferrari F80 concept",
+          "category": "Super"
+        }
+      ]
+    },
+    {
+      "name": "Pegassi",
+      "realWorldInspiration": "Lamborghini",
+      "models": [
+        {
+          "modelName": "infernus",
+          "displayName": "Infernus",
+          "realWorldInspiration": "Lamborghini Murcielago",
+          "category": "Super"
+        },
+        {
+          "modelName": "monroe",
+          "displayName": "Monroe",
+          "realWorldInspiration": "Lamborghini Miura",
+          "category": "Sports Classic"
+        },
+        {
+          "modelName": "tempesta",
+          "displayName": "Tempesta",
+          "realWorldInspiration": "Lamborghini Huracan",
+          "category": "Super"
+        },
+        {
+          "modelName": "torero",
+          "displayName": "Torero",
+          "realWorldInspiration": "Lamborghini Countach",
+          "category": "Sports Classic"
+        },
+        {
+          "modelName": "zentorno",
+          "displayName": "Zentorno",
+          "realWorldInspiration": "Lamborghini Sesto Elemento",
+          "category": "Super"
+        }
+      ]
+    },
+    {
+      "name": "Vapid",
+      "realWorldInspiration": "Ford",
+      "models": [
+        {
+          "modelName": "bullet",
+          "displayName": "Bullet",
+          "realWorldInspiration": "Ford GT",
+          "category": "Super"
+        },
+        {
+          "modelName": "dominator",
+          "displayName": "Dominator",
+          "realWorldInspiration": "Ford Mustang",
+          "category": "Muscle"
+        },
+        {
+          "modelName": "flashgt",
+          "displayName": "Flash GT",
+          "realWorldInspiration": "Ford Focus RS",
+          "category": "Sports"
+        },
+        {
+          "modelName": "sandking",
+          "displayName": "Sandking",
+          "realWorldInspiration": "Ford F-150 Raptor",
+          "category": "Off-road"
+        },
+        {
+          "modelName": "stanier",
+          "displayName": "Stanier",
+          "realWorldInspiration": "Ford Crown Victoria",
+          "category": "Sedan"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "Compact",
+    "Coupe",
+    "Muscle",
+    "Off-road",
+    "Sedan",
+    "Sports",
+    "Sports Classic",
+    "Super",
+    "SUV",
+    "Utility",
+    "Van"
+  ]
+}

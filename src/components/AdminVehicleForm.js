@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import vehicleData from '../../vehicle-data.json';
 
 export default function AdminVehicleForm({ isSecret = false, editVehicle = null, onSubmitSuccess = () => {} }) {
   const initialFormState = editVehicle ? {
     ...editVehicle
   } : {
+    manufacturer: '',
     make: '',
     model: '',
     price: '',
@@ -22,6 +24,7 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [availableModels, setAvailableModels] = useState([]);
   
   // Color options based on vehicle type
   const regularColors = {
@@ -44,10 +47,42 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
   
   const colorOptions = isSecret ? secretColors : regularColors;
   
+  // Update available models when manufacturer changes
+  useEffect(() => {
+    if (formData.manufacturer) {
+      const selectedManufacturer = vehicleData.manufacturers.find(
+        m => m.name === formData.manufacturer
+      );
+      
+      if (selectedManufacturer) {
+        setAvailableModels(selectedManufacturer.models);
+        
+        // Update the make field to match the manufacturer's real-world inspiration
+        setFormData(prev => ({
+          ...prev,
+          make: selectedManufacturer.realWorldInspiration
+        }));
+      } else {
+        setAvailableModels([]);
+      }
+    } else {
+      setAvailableModels([]);
+    }
+  }, [formData.manufacturer]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    if (name === 'make') {
+    if (name === 'manufacturer') {
+      // When manufacturer changes, reset the model
+      setFormData(prev => ({
+        ...prev,
+        manufacturer: value,
+        model: '',
+        // Update bgColor based on manufacturer
+        bgColor: colorOptions[value] || colorOptions['Other']
+      }));
+    } else if (name === 'make') {
       // When make changes, update the bgColor if it exists in our predefined colors
       const newBgColor = colorOptions[value] || colorOptions['Other'];
       
@@ -174,6 +209,33 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
         marginBottom: '1.5rem'
       }}>
         <div>
+          <label htmlFor="manufacturer" style={{ display: 'block', marginBottom: '0.5rem' }}>
+            Manufacturer <span style={{ color: 'red' }}>*</span>
+          </label>
+          <select
+            id="manufacturer"
+            name="manufacturer"
+            value={formData.manufacturer}
+            onChange={handleChange}
+            style={{
+              width: '100%',
+              padding: '0.5rem',
+              borderRadius: '4px',
+              border: '1px solid #ccc'
+            }}
+            required
+            disabled={loading}
+          >
+            <option value="">Select Manufacturer</option>
+            {vehicleData.manufacturers.map(manufacturer => (
+              <option key={manufacturer.name} value={manufacturer.name}>
+                {manufacturer.name} ({manufacturer.realWorldInspiration})
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div>
           <label htmlFor="make" style={{ display: 'block', marginBottom: '0.5rem' }}>
             Make <span style={{ color: 'red' }}>*</span>
           </label>
@@ -183,42 +245,50 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
             name="make"
             value={formData.make}
             onChange={handleChange}
-            style={{ 
-              width: '100%', 
+            style={{
+              width: '100%',
               padding: '0.5rem',
               borderRadius: '4px',
               border: '1px solid #ccc'
             }}
             required
             disabled={loading}
-            list="makes"
           />
-          <datalist id="makes">
-            {Object.keys(colorOptions).filter(make => make !== 'Other').map(make => (
-              <option key={make} value={make} />
-            ))}
-          </datalist>
+          <p style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#666' }}>
+            Auto-filled based on manufacturer selection
+          </p>
         </div>
         
         <div>
           <label htmlFor="model" style={{ display: 'block', marginBottom: '0.5rem' }}>
             Model <span style={{ color: 'red' }}>*</span>
           </label>
-          <input
-            type="text"
+          <select
             id="model"
             name="model"
             value={formData.model}
             onChange={handleChange}
-            style={{ 
-              width: '100%', 
+            style={{
+              width: '100%',
               padding: '0.5rem',
               borderRadius: '4px',
               border: '1px solid #ccc'
             }}
             required
-            disabled={loading}
-          />
+            disabled={loading || !formData.manufacturer}
+          >
+            <option value="">Select Model</option>
+            {availableModels.map(model => (
+              <option key={model.modelName} value={model.displayName}>
+                {model.displayName}
+              </option>
+            ))}
+          </select>
+          {!formData.manufacturer && (
+            <p style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#666' }}>
+              Please select a manufacturer first
+            </p>
+          )}
         </div>
         
         <div>
@@ -284,11 +354,10 @@ export default function AdminVehicleForm({ isSecret = false, editVehicle = null,
             required
             disabled={loading}
           >
-            <option value="Like New">Like New</option>
-            <option value="Excellent">Excellent</option>
+            <option value="Pristine">Pristine</option>
             <option value="Good">Good</option>
             <option value="Fair">Fair</option>
-            <option value="Poor">Poor</option>
+            <option value="Derelict">Derelict</option>
           </select>
         </div>
         
